@@ -225,6 +225,12 @@ export class MapPlaylist {
       excludedModifiers.push("isRandomSpawn");
     }
 
+    // No extreme modifiers on FourIslands - Causes 3h long stalemates
+    if (map === GameMapType.FourIslands) {
+      excludedModifiers.push("goldMultiplier");
+      excludedModifiers.push("startingGold25M");
+    }
+
     // Hard nations modifier only applies when nations are present (not HvN, which is always hard)
     if (mode === GameMode.Team) {
       excludedModifiers.push("isHardNations");
@@ -324,7 +330,6 @@ export class MapPlaylist {
       disabledUnits.push(UnitType.SAMLauncher);
     }
 
-    // 3min peace = 180s = 1800 ticks
     // 4min peace = 240s = 2400 ticks
     const peaceTimeDuration = isPeaceTime ? 240 * 10 : undefined;
 
