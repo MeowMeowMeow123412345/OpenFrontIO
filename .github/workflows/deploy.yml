@@ -35,9 +35,9 @@ on:
       - "*"
 
   # Nightly build: rebuild and deploy main to nightly.openfront.dev
-  # 10:00 UTC = 3:00 AM PDT (2:00 AM PST during winter)
+  # 07:00 UTC = 11:00 PM PST (midnight PDT during summer)
   schedule:
-    - cron: "0 10 * * *"
+    - cron: "0 7 * * *"
 
 permissions: {}
 
