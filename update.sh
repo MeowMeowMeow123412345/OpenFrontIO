@@ -26,7 +26,13 @@ echo "🔄 UPDATING SERVER: ${HOST} ENVIRONMENT"
 echo "======================================================"
 
 # Container and image configuration
-CONTAINER_NAME="openfront-${ENV}-${SUBDOMAIN}"
+if [ -n "$SUBDOMAIN" ]; then
+    CONTAINER_NAME="openfront-${ENV}-${SUBDOMAIN}"
+    ROUTE_HOST="${SUBDOMAIN}.${DOMAIN}"
+else
+    CONTAINER_NAME="openfront-${ENV}"
+    ROUTE_HOST="${DOMAIN}"
+fi
 
 echo "Pulling ${GHCR_IMAGE} from GitHub Container Registry..."
 docker pull "${GHCR_IMAGE}"
@@ -68,7 +74,7 @@ docker run -d \
     --name "${CONTAINER_NAME}" \
     --network web \
     --label "traefik.enable=true" \
-    --label "traefik.http.routers.${CONTAINER_NAME}.rule=Host(\`${SUBDOMAIN}.${DOMAIN}\`)" \
+    --label "traefik.http.routers.${CONTAINER_NAME}.rule=Host(\`${ROUTE_HOST}\`)" \
     --label "traefik.http.routers.${CONTAINER_NAME}.entrypoints=websecure" \
     --label "traefik.http.routers.${CONTAINER_NAME}.tls=true" \
     --label "traefik.http.services.${CONTAINER_NAME}.loadbalancer.server.port=80" \
@@ -98,3 +104,4 @@ echo "✅ SERVER UPDATE COMPLETED SUCCESSFULLY"
 echo "Container name: ${CONTAINER_NAME}"
 echo "Image: ${FULL_IMAGE_NAME}"
 echo "======================================================"
+
