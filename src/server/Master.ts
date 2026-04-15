@@ -7,6 +7,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { GameEnv } from "../core/configuration/Config";
 import { getServerConfigFromServer } from "../core/configuration/ConfigLoader";
+import { registerAuthRoutes } from "./AuthRoutes";
 import { logger } from "./Logger";
 import { MapPlaylist } from "./MapPlaylist";
 import { MasterLobbyService } from "./MasterLobbyService";
@@ -27,6 +28,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.use(express.json());
+
+// Register auth routes
+await registerAuthRoutes(app);
 
 // Serve the shared app shell for the root document.
 app.use(async (req, res, next) => {
