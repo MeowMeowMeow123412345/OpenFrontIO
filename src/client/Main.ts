@@ -690,6 +690,15 @@ class Client {
       return;
     }
 
+    const magicSearchParams = new URLSearchParams(window.location.search);
+    const magicCredential = magicSearchParams.get("magic_credential");
+    if (magicCredential) {
+      const cleanUrl = window.location.pathname + window.location.hash;
+      history.replaceState(null, "", cleanUrl);
+      this.tokenLoginModal.openWithToken(magicCredential);
+      return;
+    }
+
     const pathMatch = window.location.pathname.match(
       /^\/(?:w\d+\/)?game\/([^/]+)/,
     );
@@ -1046,3 +1055,4 @@ async function getTurnstileToken(): Promise<{
     });
   });
 }
+
