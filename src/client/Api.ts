@@ -172,13 +172,19 @@ export async function createCheckoutSession(
 }
 
 export function getApiBase() {
-  const domainname = getAudience();
-
-  if (domainname === "localhost") {
-    const apiDomain = process?.env?.API_DOMAIN;
-    if (apiDomain) {
-      return `https://${apiDomain}`;
+  const apiDomain = process?.env?.API_DOMAIN?.trim();
+  if (apiDomain) {
+    if (apiDomain.startsWith("http://") || apiDomain.startsWith("https://")) {
+      return apiDomain.replace(/\/+$/, "");
     }
+    if (apiDomain.startsWith("localhost") || apiDomain.startsWith("127.") || apiDomain.startsWith("0.") || apiDomain.startsWith("[::1]")) {
+      return `http://${apiDomain}`;
+    }
+    return `https://${apiDomain}`;
+  }
+
+  const domainname = getAudience();
+  if (domainname === "localhost") {
     return localStorage.getItem("apiHost") ?? "http://localhost:8787";
   }
 
