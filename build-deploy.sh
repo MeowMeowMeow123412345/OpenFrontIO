@@ -55,6 +55,10 @@ ENV="$1"
 HOST="$2"
 SUBDOMAIN="$3"
 
+if [ "$SUBDOMAIN" = "root" ] || [ "$SUBDOMAIN" = "@" ]; then
+    SUBDOMAIN=""
+fi
+
 # Step 1: Run build.sh
 echo "Step 1: Running build.sh..."
 ./build.sh "$ENV" "$VERSION_TAG"
