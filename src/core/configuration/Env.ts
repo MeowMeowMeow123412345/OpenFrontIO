@@ -86,6 +86,21 @@ export const Env = {
   get API_KEY() {
     return getEnv("API_KEY");
   },
+  get API_DOMAIN() {
+    return getEnv("API_DOMAIN");
+  },
+  get JWT_ISSUER() {
+    return getEnv("JWT_ISSUER");
+  },
+  get JWT_AUDIENCE() {
+    return getEnv("JWT_AUDIENCE");
+  },
+  get MAGIC_PUBLISHABLE_KEY() {
+    return getEnv("MAGIC_PUBLISHABLE_KEY");
+  },
+  get CORS_ORIGINS() {
+    return getEnv("CORS_ORIGINS");
+  },
   get ADMIN_TOKEN() {
     return getEnv("ADMIN_TOKEN");
   },
