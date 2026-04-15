@@ -128,6 +128,9 @@ export default defineConfig(({ mode }) => {
         env.STRIPE_PUBLISHABLE_KEY,
       ),
       "process.env.API_DOMAIN": JSON.stringify(env.API_DOMAIN),
+      "process.env.MAGIC_PUBLISHABLE_KEY": JSON.stringify(
+        env.MAGIC_PUBLISHABLE_KEY,
+      ),
       // Add other process.env variables if needed, OR migrate code to import.meta.env
     },
 
@@ -181,3 +184,4 @@ export default defineConfig(({ mode }) => {
     },
   };
 });
+
