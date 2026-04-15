@@ -39,8 +39,16 @@ HOST=$2
 VERSION_TAG=$3
 SUBDOMAIN=$4
 
+if [ "$SUBDOMAIN" = "root" ] || [ "$SUBDOMAIN" = "@" ]; then
+    SUBDOMAIN=""
+fi
+
 # Set subdomain - use the provided subdomain
-echo "Using subdomain: $SUBDOMAIN"
+if [ -z "$SUBDOMAIN" ]; then
+    echo "Using root domain (no subdomain)"
+else
+    echo "Using subdomain: $SUBDOMAIN"
+fi
 
 # Load common environment variables first
 if [ -f .env ]; then
