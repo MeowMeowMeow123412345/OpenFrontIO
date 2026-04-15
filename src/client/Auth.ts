@@ -1,4 +1,5 @@
 import { decodeJwt } from "jose";
+import { Magic } from "magic-sdk";
 import { UserSettings } from "src/core/game/UserSettings";
 import { z } from "zod";
 import { TokenPayload, TokenPayloadSchema } from "../core/ApiSchemas";
@@ -178,38 +179,29 @@ async function doRefreshJwt(): Promise<void> {
   }
 }
 
+function getMagicClient(): Magic | null {
+  const publishableKey = process.env.MAGIC_PUBLISHABLE_KEY;
+  if (!publishableKey) {
+    console.error("MAGIC_PUBLISHABLE_KEY is not configured");
+    return null;
+  }
+  return new Magic(publishableKey);
+}
+
 export async function sendMagicLink(email: string): Promise<boolean> {
-  try {
-    const apiBase = getApiBase();
-    const redirectUri = window.location.href;
-    const url = new URL(`${apiBase}/auth/magic-link`);
-    url.searchParams.set("redirect_uri", redirectUri);
-
-    const response = await fetch(url.toString(), {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify({
-        redirectDomain: window.location.origin,
-        redirectUri,
-        email,
-      }),
-    });
-
-    if (response.ok) {
-      return true;
-    }
-
-    console.error(
-      "Failed to send recovery email:",
-      response.status,
-      response.statusText,
-    );
+  const magic = getMagicClient();
+  if (!magic) {
     return false;
+  }
+
+  try {
+    await magic.auth.loginWithEmailLink({
+      email,
+      redirectURI: window.location.origin,
+    });
+    return true;
   } catch (error) {
-    console.error("Error sending recovery email:", error);
+    console.error("Error sending magic link:", error);
     return false;
   }
 }
