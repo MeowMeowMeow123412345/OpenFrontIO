@@ -1,4 +1,5 @@
 import compression from "compression";
+import cookieParser from "cookie-parser";
 import express, { NextFunction, Request, Response } from "express";
 import rateLimit from "express-rate-limit";
 import http from "http";
@@ -50,6 +51,7 @@ export async function startWorker() {
 
   const app = express();
   app.use(express.json({ limit: "5mb" }));
+  app.use(cookieParser());
   const server = http.createServer(app);
   const wss = new WebSocketServer({
     noServer: true,
