@@ -181,7 +181,11 @@ async function doRefreshJwt(): Promise<void> {
 export async function sendMagicLink(email: string): Promise<boolean> {
   try {
     const apiBase = getApiBase();
-    const response = await fetch(`${apiBase}/auth/magic-link`, {
+    const redirectUri = window.location.href;
+    const url = new URL(`${apiBase}/auth/magic-link`);
+    url.searchParams.set("redirect_uri", redirectUri);
+
+    const response = await fetch(url.toString(), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -189,20 +193,21 @@ export async function sendMagicLink(email: string): Promise<boolean> {
       credentials: "include",
       body: JSON.stringify({
         redirectDomain: window.location.origin,
-        email: email,
+        redirectUri,
+        email,
       }),
     });
 
     if (response.ok) {
       return true;
-    } else {
-      console.error(
-        "Failed to send recovery email:",
-        response.status,
-        response.statusText,
-      );
-      return false;
     }
+
+    console.error(
+      "Failed to send recovery email:",
+      response.status,
+      response.statusText,
+    );
+    return false;
   } catch (error) {
     console.error("Error sending recovery email:", error);
     return false;
