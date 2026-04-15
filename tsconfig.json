@@ -9,6 +9,7 @@
     "moduleResolution": "bundler",
     "baseUrl": ".",
     "paths": {
+      "src/*": ["src/*"],
       "resources/*": ["resources/*"]
     },
     // Emit
@@ -37,3 +38,4 @@
   ],
   "exclude": ["node_modules"]
 }
+
