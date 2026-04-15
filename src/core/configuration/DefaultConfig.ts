@@ -61,13 +61,6 @@ export abstract class DefaultServerConfig implements ServerConfig {
   }
 
   private publicKey: JWK;
-  abstract jwtAudience(): string;
-  jwtIssuer(): string {
-    const audience = this.jwtAudience();
-    return audience === "localhost"
-      ? "http://localhost:8787"
-      : `https://api.${audience}`;
-  }
   async jwkPublicKey(): Promise<JWK> {
     if (this.publicKey) return this.publicKey;
     const jwksUrl = this.jwtIssuer() + "/.well-known/jwks.json";
@@ -113,6 +106,53 @@ export abstract class DefaultServerConfig implements ServerConfig {
     }
     return token;
   }
+
+  private parseApiDomain(): string | undefined {
+    const apiDomain = Env.API_DOMAIN?.trim();
+    if (!apiDomain) return undefined;
+    return apiDomain.replace(/\/+$/, "");
+  }
+
+  jwtAudience(): string {
+    if (Env.JWT_AUDIENCE?.trim()) {
+      return Env.JWT_AUDIENCE.trim();
+    }
+
+    const apiDomain = this.parseApiDomain();
+    if (apiDomain) {
+      return apiDomain.replace(/^https?:\/\//, "");
+    }
+
+    return "openfront.io";
+  }
+
+  jwtIssuer(): string {
+    if (Env.JWT_ISSUER?.trim()) {
+      return Env.JWT_ISSUER.trim().replace(/\/+$/, "");
+    }
+
+    const audience = this.jwtAudience().trim();
+    if (audience.startsWith("http://") || audience.startsWith("https://")) {
+      return audience.replace(/\/+$/, "");
+    }
+
+    if (
+      audience === "localhost" ||
+      audience.startsWith("localhost:") ||
+      audience.startsWith("127.") ||
+      audience.startsWith("0.") ||
+      audience.startsWith("[::1]")
+    ) {
+      return `http://${audience}`;
+    }
+
+    if (audience.startsWith("api.")) {
+      return `https://${audience}`;
+    }
+
+    return `https://api.${audience}`;
+  }
+
   abstract numWorkers(): number;
   abstract env(): GameEnv;
   turnIntervalMs(): number {
